@@ -20,7 +20,7 @@ EMAIL_PASSWORD = email_pass
 
 api_key = st.sidebar.text_input("API Key", type="password", key="api_key")
 openai.api_base = "https://api.openai.com/v1" 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+openai.api_key = api_key
 model = "gpt-3.5-turbo"
 
 user_email = st.text_input("Email Address", key="user_email", value="contact@markmcrg.com")
