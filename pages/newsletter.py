@@ -50,7 +50,7 @@ for i, url in enumerate(article_urls):
     # article_dates.append(article.publish_date.strftime("%B %d, %Y"))
     article_images.append(article.top_image)
 
-if generate_newsletter:
+if generate_newsletter and user_email:
     if api_key:
         with st.spinner("Generating newsletter... This may take a while. (30 seconds to 1 minute)"):
             my_bar = st.progress(0, text="Initializing...")
@@ -100,3 +100,5 @@ if generate_newsletter:
         webbrowser.open_new_tab(f'file://{temp_html.name}')
     else:
         st.error("Please enter your API key.")
+else:
+    st.info("Enter your email address and click the button to generate a newsletter.")
