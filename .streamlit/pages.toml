@@ -1,0 +1,14 @@
+[[pages]]
+path = "streamlit_main.py"
+name = "News Summarizer"
+icon = "📰"
+
+[[pages]]
+path = "pages/weatherAlerts.py"
+name = "Weather Alerts"
+icon = "🌤️"
+
+[[pages]]
+path = "pages/newsletter.py"
+name = "Sample Newsletter"
+icon = "📩"

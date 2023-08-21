@@ -11,7 +11,6 @@ from email.message import EmailMessage
 import tempfile
 import time
 
-st.set_page_config(layout="centered")
 
 st.title("📩 Newsletter Generator")
 EMAIL_ADDRESS = 'hello@markmcrg.com'

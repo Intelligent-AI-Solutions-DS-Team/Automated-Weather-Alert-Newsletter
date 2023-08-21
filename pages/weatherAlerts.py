@@ -6,8 +6,6 @@ from newspaper import Article
 import openai
 from streamlit_main import get_href_links, generate_summary
 
-st.set_page_config(layout="centered")
-
 api_key = st.sidebar.text_input("API Key", type="password", key="api_key")
 openai.api_base = "https://api.openai.com/v1"
 openai.api_key = api_key
