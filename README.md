@@ -13,7 +13,7 @@ This program is a Streamlit-based application designed to generate and send dail
 - Customization: The program replaces placeholders in an HTML template with article titles, summaries, URLs, and images.
 
 ## Usage
-1. Run the program.
+1. Run the program. (Or skip the steps and try it out directly [here!](https://automated-newsletter.streamlit.app/))
 2. Enter your OpenAI API key in the provided input field on the sidebar.
 3. Enter your email address in the corresponding text input field.
 4. Click the "Generate Newsletter" button to initiate the newsletter generation process.
