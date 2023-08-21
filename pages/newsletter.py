@@ -91,13 +91,13 @@ if generate_newsletter and user_email:
                 smtp.send_message(msg)
             my_bar.progress(100, text="Done!")
             st.write(f'Newsletter sent to {user_email}!')
-        with st.spinner("Opening newsletter in new tab..."):
-            time.sleep(3)            
-        temp_html = tempfile.NamedTemporaryFile(mode='w', suffix='.html', delete=False)
-        temp_html.write(template_content)
-        temp_html.close()
+        # with st.spinner("Opening newsletter in new tab..."):
+        #     time.sleep(3)            
+        # temp_html = tempfile.NamedTemporaryFile(mode='w', suffix='.html', delete=False)
+        # temp_html.write(template_content)
+        # temp_html.close()
 
-        webbrowser.open_new_tab(f'file://{temp_html.name}')
+        # webbrowser.open_new_tab(f'file://{temp_html.name}')
     else:
         st.error("Please enter your API key.")
 else:
