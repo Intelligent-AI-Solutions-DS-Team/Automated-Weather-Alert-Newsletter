@@ -3,7 +3,7 @@ import openai
 from bs4 import BeautifulSoup
 import requests 
 from newspaper import Article
-
+from helpers.get_links import get_rappler_links, get_smh_links, get_sbs_links
 st.set_page_config(layout="wide", page_title="News Summarizer", page_icon="📰")
 
 from st_pages import show_pages_from_config
@@ -20,37 +20,37 @@ def clear_session_state():
         del st.session_state[key]
 
 st.sidebar.header("📰 News Summarizer")
-category = st.sidebar.radio("News Category", ("National", "Metro Manila", "Weather"), on_change=clear_session_state)
-if category == "National":
-    rappler_url = "https://www.rappler.com/nation/national-news/"
-elif category == "Metro Manila":
-    rappler_url = "https://www.rappler.com/nation/metro-manila"
-elif category == "Weather":
-    rappler_url = "https://www.rappler.com/nation/weather"
-    
+news_source = st.sidebar.selectbox("**Select news source**", ("Rappler", "The Sydney Morning Herald", "Special Broadcasting Service"), on_change=clear_session_state)
+if news_source == "Rappler":
+    category = st.sidebar.radio("Category", ("National", "Metro Manila", "Weather"), on_change=clear_session_state)
+elif news_source == "The Sydney Morning Herald":
+    category = st.sidebar.radio("Category", ("Companies", "Market"), on_change=clear_session_state)
+elif news_source == "Special Broadcasting Service":
+    category = st.sidebar.radio("Category", ("Top Stories", "Life"), on_change=clear_session_state)
 
-url = st.sidebar.text_area("Rappler URL", rappler_url, disabled=True, label_visibility="collapsed")
-
-scrape = st.sidebar.button("Scrape Articles")
-
-def get_href_links(url, n=3):
-  response = requests.get(url)
-  if response.status_code != 200:
-    st.write("Failed to fetch the page.")
-
-  soup = BeautifulSoup(response.content, "html.parser")
-  post_card_titles = soup.find_all("h3", class_="post-card__title")
-  href_links = [h3.a["href"] for h3 in post_card_titles[:n]]
-
-  return href_links
+scrape = st.sidebar.button("Get latest news")
 
 article_title = []
 article_content = []
 st.session_state.disabled = True
 
 if scrape:
-    with st.spinner("Scraping articles..."):
-        article_urls = get_href_links(url, 3)
+    with st.spinner("Fetching latest news..."):
+        if category == "National":
+            article_urls = get_rappler_links("nation", "national-news", 3)
+        elif category == "Metro Manila":
+            article_urls = get_rappler_links("nation", "metro-manila", 3)
+        elif category == "Weather":
+            article_urls = get_rappler_links("nation", "weather", 3)
+        elif category == "Companies":
+            article_urls = get_smh_links("business", "companies", 3)
+        elif category == "Market":
+            article_urls = get_smh_links("business", "market", 3)
+        elif category == "Top Stories":
+            article_urls = get_sbs_links("top-stories", 3)
+        elif category == "Life":
+            article_urls = get_sbs_links("life-articles", 3)
+
         for i, url in enumerate(article_urls):
             article = Article(url)
             article.download()

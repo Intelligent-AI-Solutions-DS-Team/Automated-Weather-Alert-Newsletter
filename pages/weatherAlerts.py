@@ -4,7 +4,8 @@ import overpy
 import requests
 from newspaper import Article
 import openai
-from streamlit_main import get_href_links, generate_summary
+from helpers.get_links import get_rappler_links
+from streamlit_main import generate_summary
 
 try:
     st.set_page_config(layout='centered')
@@ -89,7 +90,7 @@ url = "https://www.rappler.com/nation/weather"
 article_title = []
 article_content = []
 article_dates= []
-article_urls = get_href_links(url, 2)
+article_urls = get_rappler_links("nation", "weather", 3)
 for i, url in enumerate(article_urls):
     article = Article(url)
     article.download()

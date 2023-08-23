@@ -4,7 +4,7 @@ from newspaper import Article
 import openai
 from datetime import datetime
 import streamlit.components.v1 as components
-from streamlit_main import get_href_links, generate_summary
+from streamlit_main import get_rappler_href_links, generate_summary
 import smtplib
 import webbrowser
 from email.message import EmailMessage
@@ -37,7 +37,7 @@ url = "https://www.rappler.com/nation/weather"
 article_title = []
 article_content = []
 article_images = []
-article_urls = get_href_links(url, 3)
+article_urls = get_rappler_href_links(url, 3)
 for i, url in enumerate(article_urls):
     article = Article(url)
     article.download()
