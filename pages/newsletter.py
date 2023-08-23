@@ -56,7 +56,7 @@ elif category == "Weather":
 elif category == "Companies":
     article_urls = get_smh_links("business", "companies", n)
 elif category == "Market":
-    article_urls = get_smh_links("business", "market", n)
+    article_urls = get_smh_links("business", "markets", n)
 elif category == "Top Stories":
     article_urls = get_sbs_links("top-stories", n)
 elif category == "Life":
