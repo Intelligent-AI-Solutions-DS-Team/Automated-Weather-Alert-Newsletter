@@ -12,11 +12,6 @@ from email.message import EmailMessage
 import tempfile
 import time
 
-try:
-    st.set_page_config(layout='centered')
-except Exception as e:
-    st.set_page_config(layout='centered')
-    
 st.title("📩 Newsletter Generator")
 EMAIL_ADDRESS = 'hello@markmcrg.com'
 email_pass = st.secrets["EMAIL_PASSWORD"]

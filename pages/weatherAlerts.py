@@ -7,11 +7,6 @@ import openai
 from helpers.get_links import get_rappler_links
 from streamlit_main import generate_summary
 
-try:
-    st.set_page_config(layout='centered')
-except Exception as e:
-    st.set_page_config(layout='centered')
-
 api_key = st.sidebar.text_input("API Key", type="password", key="api_key")
 openai.api_base = "https://api.openai.com/v1"
 openai.api_key = api_key
@@ -60,13 +55,14 @@ def fetch_weather_alerts(lat, lon):
         url = f"https://api.openweathermap.org/data/3.0/onecall?lat={lat}&lon={lon}&exclude=hourly,minutely,daily&appid=63cab36178a3d987d900af49583e506d"
         response = requests.get(url)
         data = response.json()
-        # st.json(data)
-        # st.write("---")
         return data.get('alerts', [])
     
-def determine_status(alerts):
-    return 'Alert' if alerts else 'No Alert'
-
+def determine_status_and_description(alerts):
+    if alerts:
+        return alerts[0].get('event'), alerts[0].get('description')
+    else:
+        return 'No Alert', 'No Description'
+    
 st.title('⚠️ Weather Alerts')
 st.markdown(f"[**Employee Database**]({gsheets_url})")
 fetch_alerts = st.button('Fetch Weather Alerts', key="fetch_weather_alerts")
@@ -77,26 +73,16 @@ if fetch_alerts:
         df = load_data(gsheets_url)
         with st.spinner("Fetching Weather Alerts..."):
             df['Latitude'], df['Longitude'] = zip(*df['city'].map(get_coordinates))
-            df['status'] = df.apply(lambda row: determine_status(fetch_weather_alerts(row['Latitude'], row['Longitude'])), axis=1)
-        st.dataframe(df, hide_index=True)
+            df['status'], df['description'] = zip(*df.apply(lambda row: determine_status_and_description(fetch_weather_alerts(row['Latitude'], row['Longitude'])), axis=1))
+            # sort df alphabetically by status column
+            df = df.sort_values(by=['status'])
+            st.dataframe(df, hide_index=True)
+            grouped_df = df.groupby('status')
+            for status, group in grouped_df:
+                if status != 'No Alert':
+                    st.markdown(f"### {status}")
+                    for index, row in group.iterrows():
+                        st.markdown(f"**{row['name']}** - {row['city']}")
+
     else:
         st.error("Please enter your API key.")
-
-# Latest Philippine Weather News with date
-url = "https://www.rappler.com/nation/weather"
-
-article_title = []
-article_content = []
-article_dates= []
-article_urls = get_rappler_links("nation", "weather", 3)
-for i, url in enumerate(article_urls):
-    article = Article(url)
-    article.download()
-    article.parse() 
-    article_title.append(article.title)
-    if article.text.startswith("This is AI generated summarization"):
-        article_content.append(article.text[105:])
-    else:
-        article_content.append(article.text)
-        
-news_summaries = []
