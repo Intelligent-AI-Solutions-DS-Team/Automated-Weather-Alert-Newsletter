@@ -80,16 +80,20 @@ if generate_newsletter and user_email:
             msg['Subject'] = f'Daily Newsletter - {date_today}'
             msg['From'] = EMAIL_ADDRESS 
             msg['To'] = user_email
+            
             my_bar.progress(30, text="Fetching weather alerts...")
+            
             cities_data = get_cities_data()
             gsheets_url = st.secrets["public_gsheets_url"]
+            
             df = load_data(gsheets_url)
             df['Latitude'], df['Longitude'] = zip(*df['city'].map(get_coordinates))
             df['status'], df['description'] = zip(*df.apply(lambda row: determine_status_and_description(fetch_weather_alerts(row['Latitude'], row['Longitude'])), axis=1))
-            # sort df alphabetically by status column
+
             df = df.sort_values(by=['status'])
             st.dataframe(df, hide_index=True)
             grouped_df = df.groupby('status')
+            
             awas_state = ""
             for status, group in grouped_df:
                 if status != 'No Alert':
@@ -97,13 +101,10 @@ if generate_newsletter and user_email:
                     for index, row in group.iterrows():
                         awas_state += f"<b>{row['name']}</b> - {row['city']}<br>"
                     awas_state += "<br>"
-            st.write(awas_state)
             
             my_bar.progress(50, text="Generating newsletter content...")
             
             # Replace template content (title, summarized content, image, url, source,)
-            
-            
             # Create placeholders for replacements
             placeholders = {
                 'date_today': date_today,
