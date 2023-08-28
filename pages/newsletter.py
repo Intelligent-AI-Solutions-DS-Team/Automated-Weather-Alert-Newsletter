@@ -11,6 +11,7 @@ import webbrowser
 from email.message import EmailMessage
 import tempfile
 import time
+from pages.weatherAlerts import get_cities_data, get_coordinates, fetch_weather_alerts, determine_status_and_description, load_data
 
 st.title("📩 Newsletter Generator")
 EMAIL_ADDRESS = 'hello@markmcrg.com'
@@ -39,7 +40,6 @@ elif news_source == "The Sydney Morning Herald":
 elif news_source == "Special Broadcasting Service":
     category = st.sidebar.radio("Category", ("Top Stories", "Life"))
     
-awas_state = "No current weather alerts for any employee."
 # Number of articles to include in newsletter
 n = 5
 if category == "National":
@@ -80,9 +80,29 @@ if generate_newsletter and user_email:
             msg['Subject'] = f'Daily Newsletter - {date_today}'
             msg['From'] = EMAIL_ADDRESS 
             msg['To'] = user_email
-            my_bar.progress(30, text="Generating newsletter content...")
+            my_bar.progress(30, text="Fetching weather alerts...")
+            cities_data = get_cities_data()
+            gsheets_url = st.secrets["public_gsheets_url"]
+            df = load_data(gsheets_url)
+            df['Latitude'], df['Longitude'] = zip(*df['city'].map(get_coordinates))
+            df['status'], df['description'] = zip(*df.apply(lambda row: determine_status_and_description(fetch_weather_alerts(row['Latitude'], row['Longitude'])), axis=1))
+            # sort df alphabetically by status column
+            df = df.sort_values(by=['status'])
+            st.dataframe(df, hide_index=True)
+            grouped_df = df.groupby('status')
+            awas_state = ""
+            for status, group in grouped_df:
+                if status != 'No Alert':
+                    awas_state += f"<b>{status}</b><br>"
+                    for index, row in group.iterrows():
+                        awas_state += f"<b>{row['name']}</b> - {row['city']}<br>"
+                    awas_state += "<br>"
+            st.write(awas_state)
             
-            # Replace template content (title, summarized content, image, url, source)
+            my_bar.progress(50, text="Generating newsletter content...")
+            
+            # Replace template content (title, summarized content, image, url, source,)
+            
             
             # Create placeholders for replacements
             placeholders = {
@@ -109,13 +129,6 @@ if generate_newsletter and user_email:
                 smtp.send_message(msg)
             my_bar.progress(100, text="Done!")
             st.write(f'Newsletter sent to {user_email}!')
-        # with st.spinner("Opening newsletter in new tab..."):
-        #     time.sleep(3)            
-        # temp_html = tempfile.NamedTemporaryFile(mode='w', suffix='.html', delete=False)
-        # temp_html.write(template_content)
-        # temp_html.close()
-
-        # webbrowser.open_new_tab(f'file://{temp_html.name}')
     else:
         st.error("Please enter your API key.")
 else:
