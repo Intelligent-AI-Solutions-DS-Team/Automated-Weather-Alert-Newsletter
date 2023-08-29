@@ -48,7 +48,8 @@ if scrape:
         elif category == "Market":
             article_urls = get_smh_links("business", "markets", 3)
         elif category == "Top Stories":
-            article_urls = get_sbs_links("top-stories", 3)
+            article_urls = get_sbs_links("top-stories", 4)
+            article_urls = article_urls[1:]
         elif category == "Life":
             article_urls = get_sbs_links("life-articles", 3)
 

@@ -64,9 +64,15 @@ for i, url in enumerate(article_urls):
     article.parse() 
     article_title.append(article.title)
     if article.text.startswith("This is AI generated summarization"):
-        article_content.append(article.text[105:])
+        if len(article.text) > 10000:
+            article_content.append(article.text[105:10000])
+        else:
+            article_content.append(article.text[105:])
     else:
-        article_content.append(article.text)
+        if len(article.text) > 10000:
+            article_content.append(article.text[:10000])
+        else:
+            article_content.append(article.text)
     # article_dates.append(article.publish_date.strftime("%B %d, %Y"))
     article_images.append(article.top_image)
 
