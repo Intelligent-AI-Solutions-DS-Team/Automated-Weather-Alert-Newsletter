@@ -9,9 +9,10 @@ st.set_page_config(layout="wide", page_title="News Summarizer", page_icon="📰"
 from st_pages import show_pages_from_config
 show_pages_from_config()
 
-api_key = st.sidebar.text_input("OpenAI API Key", type="password")
+# api_key = st.sidebar.text_input("OpenAI API Key", type="password")
 
 openai.api_base = "https://api.openai.com/v1"
+api_key = st.secrets["openai_api_key"]
 openai.api_key = api_key
 model = "gpt-3.5-turbo"
 

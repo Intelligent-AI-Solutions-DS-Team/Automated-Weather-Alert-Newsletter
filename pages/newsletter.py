@@ -18,8 +18,9 @@ EMAIL_ADDRESS = 'hello@markmcrg.com'
 email_pass = st.secrets["EMAIL_PASSWORD"]
 EMAIL_PASSWORD = email_pass
 
-api_key = st.sidebar.text_input("API Key", type="password", key="api_key")
+# api_key = st.sidebar.text_input("API Key", type="password", key="api_key")
 openai.api_base = "https://api.openai.com/v1" 
+api_key = st.secrets["openai_api_key"]
 openai.api_key = api_key
 model = "gpt-3.5-turbo"
 
