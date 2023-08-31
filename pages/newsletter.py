@@ -132,11 +132,21 @@ if generate_newsletter and user_email:
             # Set replaced template as email content
             msg.set_content(template_content, subtype='html')
             my_bar.progress(70, text="Sending newsletter to email...")
-            with smtplib.SMTP_SSL('smtp.ionos.com', 465) as smtp:
-                smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD) 
-                smtp.send_message(msg)
-            my_bar.progress(100, text="Done!")
-            st.write(f'Newsletter sent to {user_email}!')
+            for attempt in range(1, 4):
+                try:
+                    with smtplib.SMTP_SSL('smtp.ionos.com', 465) as smtp:
+                        smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+                        smtp.send_message(msg)
+                    my_bar.progress(100, text="Done!")
+                    st.write(f'Newsletter sent to {user_email}!')
+                    break  # Exit loop if email is sent successfully
+                except Exception as e:
+                    print(f"Attempt {attempt} failed: {str(e)}")
+                    if attempt < 3:
+                        time.sleep(3)
+                    else:
+                        st.error(f"Failed to send newsletter to {user_email}. Please try again.")
+
     else:
         st.error("Please enter your API key.")
 else:
