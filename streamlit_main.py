@@ -3,7 +3,7 @@ import openai
 from bs4 import BeautifulSoup
 import requests 
 from newspaper import Article
-from helpers.get_links import get_rappler_links, get_smh_links, get_sbs_links
+from helpers.get_links import get_article_urls
 st.set_page_config(layout="wide", page_title="News Summarizer", page_icon="📰")
 
 from st_pages import show_pages_from_config
@@ -21,13 +21,15 @@ def clear_session_state():
         del st.session_state[key]
 
 st.sidebar.header("📰 News Summarizer")
-news_source = st.sidebar.selectbox("**Select news source**", ("Rappler", "The Sydney Morning Herald", "Special Broadcasting Service"), on_change=clear_session_state)
+news_source = st.sidebar.selectbox("**Select news source**", ("Rappler", "The Sydney Morning Herald", "Special Broadcasting Service", "Outsource Accelerator"), on_change=clear_session_state)
 if news_source == "Rappler":
     category = st.sidebar.radio("Category", ("National", "Metro Manila", "Weather"), on_change=clear_session_state)
 elif news_source == "The Sydney Morning Herald":
     category = st.sidebar.radio("Category", ("Companies", "Market"), on_change=clear_session_state)
 elif news_source == "Special Broadcasting Service":
     category = st.sidebar.radio("Category", ("Top Stories", "Life"), on_change=clear_session_state)
+elif news_source == "Outsource Accelerator":
+    category = st.sidebar.radio("Category", ("BPO News", "BPO Articles"), on_change=clear_session_state)
 
 scrape = st.sidebar.button("Get latest news")
 
@@ -37,21 +39,7 @@ st.session_state.disabled = True
 
 if scrape:
     with st.spinner("Fetching latest news..."):
-        if category == "National":
-            article_urls = get_rappler_links("nation", "national-news", 3)
-        elif category == "Metro Manila":
-            article_urls = get_rappler_links("nation", "metro-manila", 3)
-        elif category == "Weather":
-            article_urls = get_rappler_links("nation", "weather", 3)
-        elif category == "Companies":
-            article_urls = get_smh_links("business", "companies", 3)
-        elif category == "Market":
-            article_urls = get_smh_links("business", "markets", 3)
-        elif category == "Top Stories":
-            article_urls = get_sbs_links("top-stories", 4)
-            article_urls = article_urls[1:]
-        elif category == "Life":
-            article_urls = get_sbs_links("life-articles", 3)
+        article_urls = get_article_urls(category)
 
         for i, url in enumerate(article_urls):
             article = Article(url)

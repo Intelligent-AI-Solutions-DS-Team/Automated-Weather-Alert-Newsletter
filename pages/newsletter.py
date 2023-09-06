@@ -4,7 +4,7 @@ from newspaper import Article
 import openai
 from datetime import datetime
 import streamlit.components.v1 as components
-from helpers.get_links import get_rappler_links, get_smh_links, get_sbs_links
+from helpers.get_links import get_article_urls
 from streamlit_main import generate_summary
 import smtplib
 import webbrowser
@@ -33,31 +33,22 @@ with open('newsletter_template2.html', 'r') as file:
 article_title = []
 article_content = []
 article_images = []
-news_source = st.sidebar.selectbox("**Select news source**", ("Rappler", "The Sydney Morning Herald", "Special Broadcasting Service"))
+
+news_source = st.sidebar.selectbox("**Select news source**", ("Rappler", "The Sydney Morning Herald", "Special Broadcasting Service", "Outsource Accelerator"))
 if news_source == "Rappler":
     category = st.sidebar.radio("Category", ("National", "Metro Manila", "Weather"))
 elif news_source == "The Sydney Morning Herald":
     category = st.sidebar.radio("Category", ("Companies", "Market"))
 elif news_source == "Special Broadcasting Service":
     category = st.sidebar.radio("Category", ("Top Stories", "Life"))
+elif news_source == "Outsource Accelerator":
+    category = st.sidebar.radio("Category", ("BPO News", "BPO Articles"))
+
     
 # Number of articles to include in newsletter
 n = 5
-if category == "National":
-    article_urls = get_rappler_links("nation", "national-news", n)
-elif category == "Metro Manila":
-    article_urls = get_rappler_links("nation", "metro-manila", n)
-elif category == "Weather":
-    article_urls = get_rappler_links("nation", "weather", n)
-elif category == "Companies":
-    article_urls = get_smh_links("business", "companies", n)
-elif category == "Market":
-    article_urls = get_smh_links("business", "markets", n)
-elif category == "Top Stories":
-    article_urls = get_sbs_links("top-stories", n)
-elif category == "Life":
-    article_urls = get_sbs_links("life-articles", n)
-            
+article_urls = get_article_urls(category, 5)
+
 for i, url in enumerate(article_urls):
     article = Article(url)
     article.download()
