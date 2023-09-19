@@ -9,3 +9,7 @@ newspaper3k==0.2.8
 pandas==1.5.2
 overpy==0.6
 st-pages==0.4.3
+langchain==0.0.292
+langcodes==3.3.0
+langdetect==1.0.9
+langsmith==0.0.38
