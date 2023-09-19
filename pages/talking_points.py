@@ -29,7 +29,7 @@ agent = initialize_agent(tools,
 user_email = st.text_input("Email Address", key="user_email", value="contact@markmcrg.com")
 generate_button = st.button("Generate and Send Email")
 # prompt = f"Please generate three categories related to the topic of {topic}. For each category, provide five bulleted talking points starting with an emoji. The talking points should focus on the most recent news and updates about {topic}. Finally, conclude with a general summary of the up-to-date information."
-prompt = f"Generate five bulleted talking points starting with an emoji. The talking points should focus on the most recent news and updates about {topic}. The final output should include the five bulleted talking points with a general summary at the end of all the bullet points."
+prompt = f"Generate five bulleted talking points starting with an emoji. The bulleted talking points should focus on the most recent news and updates about {topic}. "
 
 if generate_button and user_email:
     with st.spinner('Generating...'):
