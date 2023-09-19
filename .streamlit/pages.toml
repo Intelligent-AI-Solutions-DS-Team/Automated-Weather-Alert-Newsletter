@@ -12,3 +12,13 @@ icon = "🌤️"
 path = "pages/newsletter.py"
 name = "Sample Newsletter"
 icon = "📩"
+
+[[pages]]
+path = "pages/talking_points.py"
+name = "Talking Points"
+icon = "🗞️"
+
+[[pages]]
+path = "pages/company_updates.py"
+name = "Company Updates"
+icon = "📊"

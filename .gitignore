@@ -2,7 +2,9 @@
 secrets.toml
 
 # test stuff
-test.py
+test*.py
+perplexityai/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
