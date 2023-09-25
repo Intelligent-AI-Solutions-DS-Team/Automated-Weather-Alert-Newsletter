@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 from collections import OrderedDict
 
 def get_rappler_links(category, subcategory, n=3):
-  response = requests.get(f'https://www.rappler.com/{category}/{subcategory}/')
+  response = requests.get(f'https://www.rappler.com/{category}/{subcategory}')
   if response.status_code != 200:
     st.write("Failed to fetch the page.")
 
@@ -67,5 +67,7 @@ def get_article_urls(category, n=3):
       article_urls = get_oa_links('news', n)
   elif category == "BPO Articles":
       article_urls = get_oa_links('articles', n)
-      
+  elif category == "Environment":
+      article_urls = get_rappler_links("environment", "", n)
+
   return article_urls

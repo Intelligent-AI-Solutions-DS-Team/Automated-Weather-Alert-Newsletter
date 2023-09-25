@@ -36,7 +36,7 @@ article_images = []
 
 news_source = st.sidebar.selectbox("**Select news source**", ("Rappler", "The Sydney Morning Herald", "Special Broadcasting Service", "Outsource Accelerator"))
 if news_source == "Rappler":
-    category = st.sidebar.radio("Category", ("National", "Metro Manila", "Weather"))
+    category = st.sidebar.radio("Category", ("National", "Metro Manila", "Weather", "Environment"))
 elif news_source == "The Sydney Morning Herald":
     category = st.sidebar.radio("Category", ("Companies", "Market"))
 elif news_source == "Special Broadcasting Service":

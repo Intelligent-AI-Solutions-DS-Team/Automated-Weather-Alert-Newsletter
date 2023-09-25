@@ -23,7 +23,7 @@ def clear_session_state():
 st.sidebar.header("📰 News Summarizer")
 news_source = st.sidebar.selectbox("**Select news source**", ("Rappler", "The Sydney Morning Herald", "Special Broadcasting Service", "Outsource Accelerator"), on_change=clear_session_state)
 if news_source == "Rappler":
-    category = st.sidebar.radio("Category", ("National", "Metro Manila", "Weather"), on_change=clear_session_state)
+    category = st.sidebar.radio("Category", ("National", "Metro Manila", "Weather", "Environment"), on_change=clear_session_state)
 elif news_source == "The Sydney Morning Herald":
     category = st.sidebar.radio("Category", ("Companies", "Market"), on_change=clear_session_state)
 elif news_source == "Special Broadcasting Service":
