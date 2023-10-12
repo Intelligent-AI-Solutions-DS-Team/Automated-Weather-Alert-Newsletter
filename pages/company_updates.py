@@ -64,8 +64,29 @@ def fetch_company_info(company_name):
     
     if company_row.empty:
         return "Company not found."
-    
-    return company_row.to_dict(orient='records')[0]
+    # Assuming 'company_row' is a DataFrame with multiple matching rows
+    company_data_list = []
+
+    for index, row in company_row.iterrows():
+        # Extract the values for each row
+        last_update = row['last_update']
+        name = row['name']
+        followers = row['followers']
+        employees = row['employees']
+
+        # Create a dictionary for the current row and append it to the list
+        company_dict = {
+            'last_update': last_update,
+            'name': name,
+            'followers': followers,
+            'employees': employees
+        }
+        company_data_list.append(company_dict)
+    return company_data_list
+
+# Now, 'company_data_list' contains a list of dictionaries, each representing a matching row.
+
+    # return company_row.to_dict(orient='records')[0]
 
 def parse_jobs_df(df):
     if df['job_title'].isnull().any():
@@ -78,11 +99,26 @@ def parse_jobs_df(df):
 
     return data
 
-def generate_summary(jobs_data):
+# date today
+date_today = pd.to_datetime('today').strftime('%B %d, %Y')
+
+def generate_company_updates_summary(company_info):
     chat_completion = openai.ChatCompletion.create(
         model=model,
         messages=[
-            {"role": "system", "content": f"You are a dictionary parser. Please concisely summarize the job postings of this company without separating each individual job. Ensure that the total output is limited to 4 sentences."},
+            {"role": "system", "content": f"You are a dictionary parser. I will give you a list of dictionaries containing the columns: last update, name, followers, and employees. Please summarize how the number of followers and employees have changed between today's last update, and the date before that. The date today is {date_today} Ensure that the total output is limited to 4 sentences."},
+            {"role": "user", "content": f"{company_info}"}
+            
+        ]
+    )
+    content = chat_completion['choices'][0]['message']['content']
+    return content
+
+def generate_job_summary(jobs_data):
+    chat_completion = openai.ChatCompletion.create(
+        model=model,
+        messages=[
+            {"role": "system", "content": f"You are a dictionary parser. Please concisely summarize the job postings dictionary of this company for today's date without separating each individual job. The date today is {date_today} Ensure that the total output is limited to 4 sentences."},
             {"role": "user", "content": f"{jobs_data}"}
         ]   
     )
@@ -123,17 +159,14 @@ if generate_updates:
         for company in companies:
             df = fetch_job_df(company)
             company_info = fetch_company_info(company)
-            
+            updates_summary = generate_company_updates_summary(company_info)
             #email_body += f"<strong>Last Data Update:</strong> {company_info['last_update']}<br>"
-            email_body += f"<strong>Company:</strong> <a href='{company_info['company_link']}'>{company_info['name']}</a><br><br>"
-            email_body += f"<strong>Headline:</strong> {company_info['headline']}<br><br>"
-            email_body += f"<strong>Followers:</strong> {company_info['followers']}<br><br>"
-            email_body += f"<strong>Employees:</strong> {company_info['employees']}<br><br>"
-            email_body += f"<strong>About:</strong> {company_info['about']}<br><br>"
-            email_body += f"<strong>Latest Post:</strong> {company_info['latest_post_1']}<br><br>"
+            email_body += f"<strong>Company:</strong> {company}<br><br>"
+            email_body += f"<strong>Company Updates:</strong><br><br>"
+            email_body += f"{updates_summary}<br><br>"
             jobs_data = parse_jobs_df(df)
             if jobs_data:
-                summary = generate_summary(jobs_data)
+                summary = generate_job_summary(jobs_data)
                 email_body += "<strong>Job Updates</strong><br>"
                 email_body += summary
             else:
