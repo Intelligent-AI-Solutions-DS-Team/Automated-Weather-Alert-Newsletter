@@ -34,13 +34,13 @@ if generate_button and user_email:
         chatbot = hugchat.ChatBot(cookies=cookies)
 
         response = chatbot.query(prompt, web_search=True)
+        response = str(response)
         st.write(response)
     with st.spinner("Sending email..."):
         msg = EmailMessage()
         msg['Subject'] = f'Talking points about {topic}'
         msg['From'] = EMAIL_ADDRESS
         msg['To'] = user_email
-        response = str(response)
         msg.set_content(response)
         for attempt in range(1, 4):
             try:
