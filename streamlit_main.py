@@ -56,7 +56,7 @@ if scrape:
         
 
 summary_button = st.sidebar.button("Summarize Articles", disabled=st.session_state.disabled)
-def generate_summary(article_content, content="You are a news summary bot. Given the content of an article, your task is to summarize it into one short paragraph, 4 sentences maximum."):
+def generate_summary(article_content, content="You are a news summary bot. Given the content of an article, your task is to summarize it concisely into 50 words maximum."):
     chat_completion = openai.ChatCompletion.create(
         model=model,
         messages=[

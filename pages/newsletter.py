@@ -22,54 +22,59 @@ EMAIL_PASSWORD = email_pass
 openai.api_base = "https://api.openai.com/v1" 
 api_key = st.secrets["openai_api_key"]
 openai.api_key = api_key
-model = "gpt-3.5-turbo"
+model = "gpt-3.5-turbo-16k"
 
 user_email = st.text_input("Email Address", key="user_email", value="contact@markmcrg.com")
 generate_newsletter = st.button("Generate Newsletter")
 
-with open('newsletter_template2.html', 'r') as file:
+with open('final_template.html', 'r') as file:
     template_content = file.read()
 
-article_title = []
-article_content = []
+# news_source = st.sidebar.selectbox("**Select news source**", ("Rappler", "The Sydney Morning Herald", "Special Broadcasting Service", "Outsource Accelerator"))
+# if news_source == "Rappler":
+#     category = st.sidebar.radio("Category", ("National", "Metro Manila", "Weather", "Environment"))
+# elif news_source == "The Sydney Morning Herald":
+#     category = st.sidebar.radio("Category", ("Companies", "Market"))
+# elif news_source == "Special Broadcasting Service":
+#     category = st.sidebar.radio("Category", ("Top Stories", "Life"))
+# elif news_source == "Outsource Accelerator":
+#     category = st.sidebar.radio("Category", ("BPO News", "BPO Articles"))
+
+# News Sources:
+# Rappler - National
+# Rappler - Weather
+# SBS - Top Stories
+# SMH - Companies
+# OA - BPO News
+
+article_titles = []
+article_contents = []
 article_images = []
+article_urls = []
+categories = ['National', 'Weather', 'Top Stories', 'Companies', 'BPO News']
+for category in categories:
+    article_urls.append(get_article_urls(category, 3))
 
-news_source = st.sidebar.selectbox("**Select news source**", ("Rappler", "The Sydney Morning Herald", "Special Broadcasting Service", "Outsource Accelerator"))
-if news_source == "Rappler":
-    category = st.sidebar.radio("Category", ("National", "Metro Manila", "Weather", "Environment"))
-elif news_source == "The Sydney Morning Herald":
-    category = st.sidebar.radio("Category", ("Companies", "Market"))
-elif news_source == "Special Broadcasting Service":
-    category = st.sidebar.radio("Category", ("Top Stories", "Life"))
-elif news_source == "Outsource Accelerator":
-    category = st.sidebar.radio("Category", ("BPO News", "BPO Articles"))
+# Flatten list
+article_urls = [item for sublist in article_urls for item in sublist]
 
-    
-# Number of articles to include in newsletter
-n = 5
-article_urls = get_article_urls(category, 5)
+read_more = [article_urls[0], article_urls[3], article_urls[6], article_urls[9], article_urls[12]]
 
 for i, url in enumerate(article_urls):
     article = Article(url)
     article.download()
     article.parse() 
-    article_title.append(article.title)
+    article_titles.append(article.title)
     if article.text.startswith("This is AI generated summarization"):
-        if len(article.text) > 10000:
-            article_content.append(article.text[105:10000])
-        else:
-            article_content.append(article.text[105:])
+        article_contents.append(article.text[105:])
     else:
-        if len(article.text) > 10000:
-            article_content.append(article.text[:10000])
-        else:
-            article_content.append(article.text)
+         article_contents.append(article.text)
     # article_dates.append(article.publish_date.strftime("%B %d, %Y"))
     article_images.append(article.top_image)
 
 if generate_newsletter and user_email:
     if api_key:
-        with st.spinner("Generating newsletter... This may take a while. (30 seconds to 1 minute)"):
+        with st.spinner("Generating newsletter... This may take a while. (1-2 minutes)"):
             my_bar = st.progress(0, text="Initializing...")
             msg = EmailMessage()
             my_bar.progress(10, text="Fetching date...")
@@ -92,34 +97,48 @@ if generate_newsletter and user_email:
             st.dataframe(df, hide_index=True)
             grouped_df = df.groupby('status')
             
-            awas_state = ""
+            awas_state = "No alerts for today.<br><br>"
             for status, group in grouped_df:
                 if status != 'No Alert':
+                    awas_state = ""
                     awas_state += f"<b>{status}</b><br>"
                     for index, row in group.iterrows():
                         awas_state += f"<b>{row['name']}</b> - {row['city']}<br>"
                     awas_state += "<br>"
+                
             
             my_bar.progress(50, text="Generating newsletter content...")
             
             # Replace template content (title, summarized content, image, url, source,)
             # Create placeholders for replacements
-            placeholders = {
-                'date_today': date_today,
-                'news_category': category,
-                'article_source': article_urls[0],
-                'awas_state': awas_state
-            }
+            for i in range(1, 6):
+                for j in range(1, 4):
+                    placeholder = "{{{}_article_title_{}}}".format(i, j)
+                    if placeholder in template_content:
+                        template_content = template_content.replace(placeholder, article_titles.pop(0), 1)
 
-            # Generate and add article related replacements
-            for i in range(5):
-                placeholders[f'article_title_{i+1}'] = article_title[i]
-                placeholders[f'article_content_{i+1}'] = generate_summary(article_content[i], content="You are a news summary bot. Given the content of an article, your task is to summarize it into two short sentences.")
-                placeholders[f'article_url_{i+1}'] = article_urls[i]
-                placeholders[f'article_image_{i+1}'] = article_images[i]
-            for placeholder, value in placeholders.items():
-                template_content = template_content.replace(f'{{{placeholder}}}', value)
+                    placeholder = "{{{}_article_image_{}}}".format(i, j)
+                    image_to_replace = article_images.pop(0)
+                    while placeholder in template_content:
+                        template_content = template_content.replace(placeholder, image_to_replace, 1)
+                        
+                    placeholder = "{{{}_article_content_{}}}".format(i, j)
+                    if placeholder in template_content:
+                        summarized_content = generate_summary(article_contents.pop(0))
+                        template_content = template_content.replace(placeholder, summarized_content, 1)
 
+                    placeholder = "{{{}_article_url_{}}}".format(i, j)
+                    if placeholder in template_content:
+                        template_content = template_content.replace(placeholder, article_urls.pop(0), 1)
+                        
+            template_content = template_content.replace("{date_today}", date_today)
+            template_content = template_content.replace("{awas_state}", awas_state)
+            
+            for i in range(1, 6):
+                placeholder = "{{read_more_{}}}".format(i)
+                if placeholder in template_content:
+                    template_content = template_content.replace(placeholder, read_more.pop(0), 1)
+        
             # Set replaced template as email content
             msg.set_content(template_content, subtype='html')
             my_bar.progress(70, text="Sending newsletter to email...")

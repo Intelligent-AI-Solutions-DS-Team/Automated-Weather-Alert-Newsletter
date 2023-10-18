@@ -1,5 +1,3 @@
-from langchain.agents import load_tools, initialize_agent 
-from langchain.chat_models import ChatOpenAI
 import streamlit as st
 from email.message import EmailMessage
 from hugchat import hugchat
