@@ -10,7 +10,7 @@ def get_rappler_links(category, subcategory, n=3):
 
   soup = BeautifulSoup(response.content, "html.parser")
   post_card_titles = soup.find_all("h3", class_="post-card__title")
-  href_links = [h3.a["href"] for h3 in post_card_titles[:n]]
+  href_links = [h3.a["href"] for h3 in post_card_titles[1:n+1]]
 
   return href_links
 
