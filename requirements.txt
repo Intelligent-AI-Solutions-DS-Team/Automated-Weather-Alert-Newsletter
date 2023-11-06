@@ -23,3 +23,4 @@ google-cloud-translate==3.12.0
 google-search-results==2.4.2
 googleapis-common-protos==1.58.0
 hugchat==0.3.1
+perplexityai @ git+https://github.com/nathanrchn/perplexityai.git@fca9bb5220cc8d0f2277aa5b78a9ca0d83602fb8
