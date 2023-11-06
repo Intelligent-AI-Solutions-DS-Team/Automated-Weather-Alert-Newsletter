@@ -28,7 +28,7 @@ if "disabledStatus" not in st.session_state:
 def superscript(match):
     return f'<sup>[{match.group(1)}]</sup>'
 
-generate_button = st.button("Generate", on_click=disable, help="Click to generate updates", disabled=st.session_state.disabledStatus)
+generate_button = st.button("Generate", on_click=disable, help="Click to generate updates")
 
 prompt = f""""For the company named {company_name}
 
@@ -44,62 +44,65 @@ Each bullet point in your answer should begin with an emoji, and no need to talk
 
 if generate_button:
     with st.spinner('Generating...'):
-        perplexity = Perplexity()
-        s = perplexity.search(prompt)
+        # perplexity = Perplexity()
+        # s = perplexity.search(prompt, mode='concise', search_focus='internet')
+        # response = list(s)[-1]
+            
+        # if response['status'] == "completed":
+        #     pattern = r'\[([0-9]+)\]'
+        #     st.write(response)
         
-        # Set a timeout in seconds (e.g., 30 seconds)
-        timeout = 30
-        start_time = time.time()
-         
-        response = None
+        converted_text = ""
         while True:
-            response = list(s)[-1]
-            if response['status'] == "completed":
+            try:
+                perplexity = Perplexity()
+                s = perplexity.search(prompt, mode='concise', search_focus='internet')
+                response = list(s)[-1]
+                if response['status'] == "completed":
+                    pattern = r'\[([0-9]+)\]'
+                converted_text = re.sub(pattern, superscript, response['answer'])
                 break
+            except KeyError as e:
+                print(f"KeyError: {e}")
+                pass
             
-            if time.time() - start_time >= timeout:
-                st.error("Operation timed out. Please try again later.")
-                break
-            
-        if response['status'] == "completed":
-            pattern = r'\[([0-9]+)\]'
-            converted_text = re.sub(pattern, superscript, response['answer'])
-            st.markdown(converted_text, unsafe_allow_html=True)
-            
-            with st.expander("**📚 Sources**"):
-                for index, result in enumerate(response["web_results"], start=1):
-                    name = result["name"]
-                    url = result["url"]
-                    timestamp = result["timestamp"]
-                    st.markdown(f"{index}. [{name}]({url}) - {timestamp}")
-                    
-            with st.expander("**🔗 Related Links**"):
-                for result in response["extra_web_results"]:
-                    name = result["name"]
-                    url = result["url"]
-                    st.markdown(f"* [{name}]({url}) - {timestamp}")
-            
-            # For debugging
-            response_text = json.dumps(response, indent=4)
-            msg = EmailMessage()
-            
-            msg['From'] = EMAIL_ADDRESS
-            msg['To'] = "contact@markmcrg.com"
-            msg['Subject'] = f"Perplexity Login"
+        st.write(response)
+        st.markdown(converted_text, unsafe_allow_html=True)
+        
+        with st.expander("**📚 Sources**"):
+            for index, result in enumerate(response["web_results"], start=1):
+                name = result["name"]
+                url = result["url"]
+                timestamp = result["timestamp"]
+                st.markdown(f"{index}. [{name}]({url}) - {timestamp}")
+                
+        with st.expander("**🔗 Related Links**"):
+            for result in response["extra_web_results"]:
+                name = result["name"]
+                url = result["url"]
+                st.markdown(f"* [{name}]({url}) - {timestamp}")
+        
+        # For debugging
+        response_text = json.dumps(response, indent=4)
+        msg = EmailMessage()
+        
+        msg['From'] = EMAIL_ADDRESS
+        msg['To'] = "contact@markmcrg.com"
+        msg['Subject'] = f"Perplexity Login"
 
-            msg.set_content(response_text)
-            for attempt in range(1, 4):
-                try:
-                    with smtplib.SMTP_SSL('smtp.ionos.com', 465) as smtp:
-                        smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
-                        smtp.send_message(msg)
-                    print("Email Sent!")
-                    break  # Exit loop if email is sent successfully
-                except Exception as e:
-                    print(f"Attempt {attempt} failed: {str(e)}")
-                    if attempt < 3:
-                        time.sleep(3)
-                    else:
-                        print(e)
-        perplexity.close()
+        msg.set_content(response_text)
+        for attempt in range(1, 4):
+            try:
+                with smtplib.SMTP_SSL('smtp.ionos.com', 465) as smtp:
+                    smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+                    smtp.send_message(msg)
+                print("Email Sent!")
+                break  # Exit loop if email is sent successfully
+            except Exception as e:
+                print(f"Attempt {attempt} failed: {str(e)}")
+                if attempt < 3:
+                    time.sleep(3)
+                else:
+                    print(e)
+    perplexity.close()
 
