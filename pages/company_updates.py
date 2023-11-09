@@ -23,17 +23,29 @@ company_name = st.text_input ("Enter company name here")
 
 generate_button = st.button("Generate Updates")
 
-prompt = f"""For the company named {company_name}
+prompt = f"""
+Using only existing and verifiable sources, please do the following for a company named {company_name}:
 
-Provide an introductory description of {company_name}.
+1. Provide an introductory description of {company_name}, drawing from current, credible sources.
 
-For {company_name}, find the 5 most recent news articles within the last 6 months. For each article, include a summary of about fifty words, the publication date, and the URL source so that the reader can click on the URL for the full news.
+2. Search for and list the five most recent verifiable news articles about {company_name} that were published in the last six months. For each article, provide:
+   - A summary (ensure that the content of the summary is drawn from the article and not generated).
+   - The publication date (confirm this date is accurate according to the source).
+   - The direct URL to the full article (verify that the URL leads to the actual article).
 
-For the industry related to {company_name}, find the 5 most recent news articles within the last 6 months. For each article, provide a summary in about fifty words, the publication date, and the URL source so that the reader can click on the URL for the full news.
+3. Similarly, find the five most recent, verifiable news articles about the industry related to {company_name}, published within the last six months. For each, include:
+   - A summary (summarize the actual content of the article).
+   - The publication date (make sure the date matches the source).
+   - The direct URL to the full article (check that the URL is correct and the link is live).
 
-Make sure you include the url of each article mentioned in the result.
+Please ensure:
+   - Each bullet point starts with a unique emoji.
+   - The information provided is accurate and verifiable.
+   - You do not invent or include any speculative information.
+   - All URLs provided are live and lead to real, credible sources.
 
-Begin each bullet point with a distinct emoji, and present the information directly as requested. Make sure the articles are relevant and verified. Avoid non-existent links and do not invent any information. Make sure that you reference publications."""
+If you are unable to verify the information or find real articles, please state so clearly.
+"""
 
 
 # prompt = f"Generate five bulleted talking points starting with an emoji. The bulleted talking points should focus on the most recent news and updates about {topic}. "
