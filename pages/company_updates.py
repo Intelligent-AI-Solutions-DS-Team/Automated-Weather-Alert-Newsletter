@@ -25,11 +25,11 @@ generate_button = st.button("Generate Updates")
 
 prompt = f"""For the company named {company_name}
 
-🏢 Provide an introductory description of {company_name}.
+Provide an introductory description of {company_name}.
 
-📰 For {company_name}, find the 5 most recent news articles within the last 6 months. For each article, include a summary of about fifty words, the publication date, and the URL source so that the reader can click on the URL for the full news.
+For {company_name}, find the 5 most recent news articles within the last 6 months. For each article, include a summary of about fifty words, the publication date, and the URL source so that the reader can click on the URL for the full news.
 
-🌐 For the industry related to {company_name}, find the 5 most recent news articles within the last 6 months. For each article, provide a summary in about fifty words, the publication date, and the URL source so that the reader can click on the URL for the full news.
+For the industry related to {company_name}, find the 5 most recent news articles within the last 6 months. For each article, provide a summary in about fifty words, the publication date, and the URL source so that the reader can click on the URL for the full news.
 
 Begin each bullet point with a distinct emoji, and present the information directly as requested."""
 
