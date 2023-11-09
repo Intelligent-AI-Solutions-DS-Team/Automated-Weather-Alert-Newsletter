@@ -31,6 +31,8 @@ For {company_name}, find the 5 most recent news articles within the last 6 month
 
 For the industry related to {company_name}, find the 5 most recent news articles within the last 6 months. For each article, provide a summary in about fifty words, the publication date, and the URL source so that the reader can click on the URL for the full news.
 
+Make sure you include the url of each article mentioned in the result.
+
 Begin each bullet point with a distinct emoji, and present the information directly as requested."""
 
 
