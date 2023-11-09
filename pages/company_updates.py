@@ -23,15 +23,18 @@ company_name = st.text_input ("Enter company name here")
 
 generate_button = st.button("Generate Updates")
 
-prompt = f""""For the company named {company_name}
+prompt = f"""For the company named {{company_name}}
 
-Give me an introductory description of the company. 
+🏢 Provide an introductory description of {{company_name}}.
 
-Give me also the 5 pieces of latest news regarding the company, each with a summary.
+📰 For {{company_name}}, find the 5 most recent news articles within the last 3 months. For each article, include a summary, the publication date, and the URL source.
 
-Give me also the 5 pieces of latest news regarding the industry related to the company, each with a summary as well.
+🌐 For the industry related to {{company_name}}, find the 5 most recent news articles within the last 3 months. For each article, provide a summary, the publication date, and the URL source.
 
-Each bullet point in your answer should begin with an emoji, and no need to talk to me as if I prompted you. Just give me the answer as I've instructed so."""
+🔗 List all your sources with their URLs.
+
+Begin each bullet point with a distinct emoji, and present the information directly as requested."""
+
 
 # prompt = f"Generate five bulleted talking points starting with an emoji. The bulleted talking points should focus on the most recent news and updates about {topic}. "
 
