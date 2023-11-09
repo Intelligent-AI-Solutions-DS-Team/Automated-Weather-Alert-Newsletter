@@ -31,7 +31,7 @@ prompt = f"""For the company named {{company_name}}
 
 🌐 For the industry related to {{company_name}}, find the 5 most recent news articles within the last 3 months. For each article, provide a summary, the publication date, and the URL source.
 
-🔗 List all your sources with their URLs.
+🔗 List all your sources with their URLs and display them in the results so that the reader can click on the URL for the full news.
 
 Begin each bullet point with a distinct emoji, and present the information directly as requested."""
 
