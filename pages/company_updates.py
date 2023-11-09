@@ -33,7 +33,7 @@ For the industry related to {company_name}, find the 5 most recent news articles
 
 Make sure you include the url of each article mentioned in the result.
 
-Begin each bullet point with a distinct emoji, and present the information directly as requested."""
+Begin each bullet point with a distinct emoji, and present the information directly as requested. Make sure the articles are relevant and verified. Avoid non-existent links and do not invent any information. Make sure that you reference publications."""
 
 
 # prompt = f"Generate five bulleted talking points starting with an emoji. The bulleted talking points should focus on the most recent news and updates about {topic}. "
